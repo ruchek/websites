@@ -130,7 +130,7 @@ body {
   display: none;
   transition: color 0.3s ease;
   padding: 0.5rem;
-  z-index: 1001;
+  z-index: 1003;
   background: none;
   border: none;
 }
@@ -209,7 +209,9 @@ body {
     padding: 5rem 2rem 2rem;
     gap: 1rem;
     transition: right 0.3s ease;
-    z-index: 1000;
+    z-index: 1004;
+    border-left: 1px solid var(--border-color);
+    overflow-y: auto;
   }
   
   .nav-mobile-open {
@@ -369,7 +371,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1001;
   display: none;
 }
 
