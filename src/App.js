@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 import About from './pages/About';
@@ -11,9 +11,16 @@ import './App.css';
 function App() {
   const location = useLocation();
   const { theme, toggleTheme, isDark } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="app">
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-overlay active" 
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo">
@@ -21,32 +28,35 @@ function App() {
             Design Portfolio
           </Link>
           
-          <nav className="nav">
+          <nav className={`nav ${mobileMenuOpen ? 'nav-mobile-open' : ''}`}>
             <Link 
               to="/" 
               className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link 
               to="/projects" 
               className={`nav-link ${location.pathname === '/projects' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Projects
             </Link>
             <Link 
               to="/contact" 
               className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Contact
             </Link>
             <Link 
               to="/resume" 
               className={`nav-link ${location.pathname === '/resume' ? 'active' : ''}`}
+              onClick={() => setMobileMenuOpen(false)}
             >
               Resume
             </Link>
-            <div className="menu-icon">≡</div>
           </nav>
 
           <div className="header-actions">
@@ -71,6 +81,13 @@ function App() {
               <div className="avatar avatar-placeholder" style={{display: 'none'}}>
                 <span>SC</span>
               </div>
+            </div>
+            
+            <div 
+              className="menu-icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
             </div>
           </div>
         </div>
