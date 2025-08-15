@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { StaggerContainer, StaggerItem, ScrollReveal, MagneticHover } from '../components/animations/AnimationWrapper';
+import { SwipeableContainer, TouchRipple, PullToRefresh } from '../components/animations/MobileGestures';
 import '../styles/Projects.css';
 
 const projectData = [
@@ -46,6 +49,29 @@ export default function Projects() {
   const [selectedCategory, setSelectedCategory] = useState('All Projects');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Simulate refresh
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setCurrentPage(1);
+      setSelectedCategory('All Projects');
+    }, 1500);
+  };
+
+  const handleSwipeLeft = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handleSwipeRight = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
 
   const filteredProjects = projectData.filter(project => {
     if (selectedCategory === 'All Projects') return true;
@@ -59,61 +85,196 @@ export default function Projects() {
   const paginatedProjects = filteredProjects.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="projects-page">
-      <div className="projects-header">
-        <h1 className="projects-title">Projects</h1>
-        <p className="projects-subtitle">
-          A curated collection of my design work, showcasing my skills and experience in UI/UX design.
-        </p>
-      </div>
-
-      <div className="filter-tabs">
-        {categories.map(category => (
-          <button
-            key={category}
-            className={`filter-tab ${selectedCategory === category ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedCategory(category);
-              setCurrentPage(1);
-            }}
+    <PullToRefresh onRefresh={handleRefresh} className="projects-page">
+      <ScrollReveal direction="up">
+        <div className="projects-header">
+          <motion.h1 
+            className="projects-title"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            {category}
-          </button>
-        ))}
-      </div>
-
-      <div className="projects-grid">
-        {paginatedProjects.map(project => (
-          <Link 
-            key={project.id} 
-            to={`/projects/${project.id}`} 
-            className="project-card-link"
+            Projects {isRefreshing && <motion.span 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            >🔄</motion.span>}
+          </motion.h1>
+          <motion.p 
+            className="projects-subtitle"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="project-card">
-              <div className="project-image-container">
-                <div 
-                  className="project-image"
-                  style={{ 
-                    background: `linear-gradient(135deg, ${project.colors.join(', ')})` 
-                  }}
-                >
-                  <div className="project-preview">
-                    <img 
-                      src={project.image} 
-                      alt={project.title}
-                      className="preview-image"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="project-info">
-                <h3 className="project-title">{project.title}</h3>
-                <p className="project-category">{project.category}</p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+            A curated collection of my design work, showcasing my skills and experience in UI/UX design.
+            <br />
+            <motion.small 
+              style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1 }}
+            >
+              📱 Swipe left/right to navigate pages
+            </motion.small>
+          </motion.p>
+        </div>
+      </ScrollReveal>
+
+      <ScrollReveal direction="up">
+        <div className="filter-tabs">
+          {categories.map((category, index) => (
+            <TouchRipple key={category}>
+              <motion.button
+                className={`filter-tab ${selectedCategory === category ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setCurrentPage(1);
+                }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 8px 25px rgba(74, 144, 226, 0.3)"
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {category}
+              </motion.button>
+            </TouchRipple>
+          ))}
+        </div>
+      </ScrollReveal>
+
+      <SwipeableContainer
+        onSwipeLeft={handleSwipeLeft}
+        onSwipeRight={handleSwipeRight}
+        className="projects-grid-container"
+      >
+        <motion.div className="projects-grid">
+          <AnimatePresence mode="wait">
+            {paginatedProjects.map((project, index) => (
+            <motion.div
+              key={`${selectedCategory}-${project.id}`}
+              layout
+              initial={{ opacity: 0, scale: 0.8, rotateY: -90 }}
+              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+              exit={{ opacity: 0, scale: 0.8, rotateY: 90 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: [0.22, 1, 0.36, 1]
+              }}
+              whileHover={{ y: -10 }}
+            >
+              <Link 
+                to={`/projects/${project.id}`} 
+                className="project-card-link"
+              >
+                <MagneticHover strength={0.3}>
+                  <motion.div 
+                    className="project-card"
+                    whileHover={{ 
+                      rotateY: 5,
+                      rotateX: 5,
+                      scale: 1.02,
+                      boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)"
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20
+                    }}
+                  >
+                    <div className="project-image-container">
+                      <motion.div 
+                        className="project-image"
+                        style={{ 
+                          background: `linear-gradient(135deg, ${project.colors.join(', ')})` 
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <motion.div 
+                          className="project-preview"
+                          whileHover={{ 
+                            scale: 1.05,
+                            rotateZ: 2
+                          }}
+                        >
+                          <motion.img 
+                            src={project.image} 
+                            alt={project.title}
+                            className="preview-image"
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </motion.div>
+                        
+                        {/* Enhanced overlay with project details */}
+                        <motion.div
+                          className="project-overlay"
+                          initial={{ opacity: 0 }}
+                          whileHover={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <div className="overlay-content">
+                            <motion.h3
+                              className="overlay-title"
+                              initial={{ y: 30, opacity: 0 }}
+                              whileHover={{ y: 0, opacity: 1 }}
+                              transition={{ delay: 0.1, duration: 0.4 }}
+                            >
+                              {project.title}
+                            </motion.h3>
+                            <motion.p
+                              className="overlay-category"
+                              initial={{ y: 20, opacity: 0 }}
+                              whileHover={{ y: 0, opacity: 1 }}
+                              transition={{ delay: 0.2, duration: 0.4 }}
+                            >
+                              {project.category}
+                            </motion.p>
+                            <motion.span
+                              className="overlay-cta"
+                              initial={{ y: 20, opacity: 0 }}
+                              whileHover={{ y: 0, opacity: 1 }}
+                              transition={{ delay: 0.3, duration: 0.4 }}
+                            >
+                              View Project →
+                            </motion.span>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    </div>
+                    
+                    <motion.div 
+                      className="project-info"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 + 0.3 }}
+                    >
+                      <motion.h3 
+                        className="project-title"
+                        whileHover={{ color: "var(--primary-color)" }}
+                      >
+                        {project.title}
+                      </motion.h3>
+                      <motion.p 
+                        className="project-category"
+                        initial={{ opacity: 0.7 }}
+                        whileHover={{ opacity: 1 }}
+                      >
+                        {project.category}
+                      </motion.p>
+                    </motion.div>
+                  </motion.div>
+                </MagneticHover>
+              </Link>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+    </SwipeableContainer>
 
       {totalPages > 1 && (
         <div className="pagination">
@@ -144,6 +305,6 @@ export default function Projects() {
           </button>
         </div>
       )}
-    </div>
+    </PullToRefresh>
   );
 }
