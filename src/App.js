@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 import About from './pages/About';
 import Projects from './pages/Projects';
@@ -10,8 +10,14 @@ import './App.css';
 
 function App() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { theme, toggleTheme, isDark } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  const handleNavClick = (path) => {
+    navigate(path);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <div className="app">
