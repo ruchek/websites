@@ -24,32 +24,39 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitStatus({ type: '', message: '' });
 
+    // EmailJS configuration - these need to be set up
+    const SERVICE_ID = process.env.REACT_APP_EMAILJS_SERVICE_ID || 'service_default';
+    const TEMPLATE_ID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID || 'template_default';
+    const PUBLIC_KEY = process.env.REACT_APP_EMAILJS_PUBLIC_KEY || 'default_key';
+
     const templateParams = {
       from_name: formData.name,
       from_email: formData.email,
-      subject: formData.subject || 'UI/UX enquiry',
+      subject: formData.subject || 'UI/UX Portfolio Contact',
       message: formData.message,
-      to_email: 'imruchekshah@gmail.com'
+      to_email: 'imruchekshah@gmail.com',
+      reply_to: formData.email
     };
 
     try {
-      await emailjs.send(
-        'your_service_id', 
-        'your_template_id', 
+      const result = await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
         templateParams,
-        'your_public_key'
+        PUBLIC_KEY
       );
       
+      console.log('EmailJS result:', result);
       setSubmitStatus({ 
         type: 'success', 
-        message: 'Thank you! Your message has been sent successfully.' 
+        message: 'Thank you! Your message has been sent successfully. I will get back to you soon.' 
       });
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
       console.error('EmailJS error:', error);
       setSubmitStatus({ 
         type: 'error', 
-        message: 'Sorry, there was an error sending your message. Please try again or contact me directly at imruchekshah@gmail.com.' 
+        message: 'Sorry, there was an error sending your message. Please try the alternative method below or contact me directly at imruchekshah@gmail.com.' 
       });
     } finally {
       setIsSubmitting(false);
@@ -149,7 +156,7 @@ export default function Contact() {
                 className="btn-secondary"
                 onClick={handleMailtoFallback}
               >
-                Open Email Client
+                Alternative: Open Email Client
               </button>
             </div>
           </form>
