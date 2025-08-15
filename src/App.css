@@ -61,9 +61,12 @@ body {
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   position: sticky;
+  position: -webkit-sticky;
   top: 0;
   z-index: 100;
   transition: background-color 0.3s ease, border-color 0.3s ease;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .header-content {
@@ -103,6 +106,8 @@ body {
   padding: 0.5rem 0;
   position: relative;
   transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
 }
 
 .nav-link:hover {
@@ -133,6 +138,11 @@ body {
   z-index: 1003;
   background: none;
   border: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  touch-action: manipulation;
 }
 
 .header-actions {
@@ -203,6 +213,8 @@ body {
     width: 80%;
     max-width: 300px;
     height: 100vh;
+    height: 100dvh;
+    height: -webkit-fill-available;
     background-color: var(--bg-primary);
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     flex-direction: column;
@@ -212,10 +224,18 @@ body {
     z-index: 1004;
     border-left: 1px solid var(--border-color);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
   
   .nav-mobile-open {
     right: 0;
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
   }
   
   .nav-link {
@@ -225,6 +245,12 @@ body {
     text-align: left;
     border-radius: 8px;
     transition: background-color 0.2s ease;
+    display: block;
+    position: relative;
+    z-index: 1005;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    cursor: pointer;
   }
   
   .nav-link:hover {
@@ -373,6 +399,8 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1001;
   display: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
 }
 
 .mobile-overlay.active {

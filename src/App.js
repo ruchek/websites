@@ -83,12 +83,14 @@ function App() {
               </div>
             </div>
             
-            <div 
+            <button 
               className="menu-icon"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              type="button"
             >
               {mobileMenuOpen ? '✕' : '☰'}
-            </div>
+            </button>
           </div>
         </div>
       </header>
