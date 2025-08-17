@@ -43,8 +43,21 @@ function App() {
       >
         <div className="header-content">
           <Link to="/" className="logo">
-            <span className="logo-icon">📱</span>
-            Design Portfolio
+            <div className="logo-avatar">
+              <img 
+                src="https://randomuser.me/api/portraits/women/44.jpg" 
+                alt="Pooja Ravi" 
+                className="logo-avatar-img"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="logo-avatar-placeholder" style={{display: 'none'}}>
+                <span>PR</span>
+              </div>
+            </div>
+            Pooja Ravi
           </Link>
           
           <motion.nav 
@@ -86,21 +99,6 @@ function App() {
             >
               {isDark ? '☀️' : '🌙'}
             </button>
-            
-            <div className="profile-avatar">
-              <img 
-                src="https://randomuser.me/api/portraits/women/44.jpg" 
-                alt="Profile" 
-                className="avatar"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div className="avatar avatar-placeholder" style={{display: 'none'}}>
-                <span>SC</span>
-              </div>
-            </div>
             
             <button 
               className="menu-icon"

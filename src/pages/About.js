@@ -18,7 +18,7 @@ export default function About() {
                 <MagneticHover>
                   <motion.img 
                     src="https://randomuser.me/api/portraits/women/44.jpg" 
-                    alt="Sophia Carter" 
+                    alt="Pooja Ravi" 
                     className="profile-img"
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
@@ -38,7 +38,7 @@ export default function About() {
                     }}
                   />
                   <div className="profile-img profile-placeholder" style={{display: 'none'}}>
-                    <span>SC</span>
+                    <span>PR</span>
                   </div>
                 </MagneticHover>
               </FloatingElement>
@@ -50,7 +50,7 @@ export default function About() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, duration: 0.8 }}
                   >
-                    Sophia Carter
+                    Pooja Ravi
                   </motion.h1>
                 </StaggerItem>
                 <StaggerItem>
