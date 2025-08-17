@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { StaggerContainer, StaggerItem, ScrollReveal, MagneticHover } from '../components/animations/AnimationWrapper';
-import { SwipeableContainer, TouchRipple, PullToRefresh } from '../components/animations/MobileGestures';
+import { StaggerContainer, StaggerItem, ScrollReveal } from '../components/animations/AnimationWrapper';
+import { TouchRipple } from '../components/animations/MobileGestures';
 import '../styles/Projects.css';
 
 const projectData = [
@@ -48,30 +48,18 @@ const categories = ['All Projects', 'UI Design', 'UX Research'];
 export default function Projects() {
   const [selectedCategory, setSelectedCategory] = useState('All Projects');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
   const itemsPerPage = 6;
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    // Simulate refresh
-    setTimeout(() => {
-      setIsRefreshing(false);
-      setCurrentPage(1);
-      setSelectedCategory('All Projects');
-    }, 1500);
-  };
-
-  const handleSwipeLeft = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(prev => prev + 1);
-    }
-  };
-
-  const handleSwipeRight = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
+  // Check if mobile on mount and window resize
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const filteredProjects = projectData.filter(project => {
     if (selectedCategory === 'All Projects') return true;
@@ -85,7 +73,7 @@ export default function Projects() {
   const paginatedProjects = filteredProjects.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <PullToRefresh onRefresh={handleRefresh} className="projects-page">
+    <div className="projects-page">
       <ScrollReveal direction="up">
         <div className="projects-header">
           <motion.h1 
@@ -94,10 +82,7 @@ export default function Projects() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            Projects {isRefreshing && <motion.span 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            >🔄</motion.span>}
+            Projects
           </motion.h1>
           <motion.p 
             className="projects-subtitle"
@@ -106,15 +91,6 @@ export default function Projects() {
             transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             A curated collection of my design work, showcasing my skills and experience in UI/UX design.
-            <br />
-            <motion.small 
-              style={{ color: 'var(--text-tertiary)', fontSize: '0.9rem' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-            >
-              📱 Swipe left/right to navigate pages
-            </motion.small>
           </motion.p>
         </div>
       </ScrollReveal>
@@ -145,11 +121,7 @@ export default function Projects() {
         </div>
       </ScrollReveal>
 
-      <SwipeableContainer
-        onSwipeLeft={handleSwipeLeft}
-        onSwipeRight={handleSwipeRight}
-        className="projects-grid-container"
-      >
+      <div className="projects-grid-container">
         <motion.div className="projects-grid">
           <AnimatePresence mode="wait">
             {paginatedProjects.map((project, index) => (
@@ -164,49 +136,51 @@ export default function Projects() {
                 delay: index * 0.1,
                 ease: [0.22, 1, 0.36, 1]
               }}
-              whileHover={{ y: -10 }}
+              whileHover={!isMobile ? { y: -10 } : undefined}
+              style={{ touchAction: 'pan-y' }}
             >
               <Link 
                 to={`/projects/${project.id}`} 
                 className="project-card-link"
               >
-                <MagneticHover strength={0.3}>
-                  <motion.div 
-                    className="project-card"
-                    whileHover={{ 
-                      rotateY: 5,
-                      rotateX: 5,
-                      scale: 1.02,
-                      boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)"
-                    }}
-                    transition={{
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 20
-                    }}
+                <motion.div 
+                  className="project-card"
+                  whileHover={!isMobile ? { 
+                    scale: 1.02,
+                    boxShadow: "0 25px 50px rgba(0, 0, 0, 0.15)"
+                  } : undefined}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20
+                  }}
+                  style={{ touchAction: 'pan-y' }}  // Allow vertical scrolling on touch
                   >
                     <div className="project-image-container">
                       <motion.div 
                         className="project-image"
                         style={{ 
-                          background: `linear-gradient(135deg, ${project.colors.join(', ')})` 
+                          background: `linear-gradient(135deg, ${project.colors.join(', ')})`,
+                          touchAction: 'pan-y'
                         }}
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={!isMobile ? { scale: 1.1 } : undefined}
                         transition={{ duration: 0.4 }}
                       >
                         <motion.div 
                           className="project-preview"
-                          whileHover={{ 
+                          whileHover={!isMobile ? { 
                             scale: 1.05,
                             rotateZ: 2
-                          }}
+                          } : undefined}
+                          style={{ touchAction: 'pan-y' }}
                         >
                           <motion.img 
                             src={project.image} 
                             alt={project.title}
                             className="preview-image"
-                            whileHover={{ scale: 1.1 }}
+                            whileHover={!isMobile ? { scale: 1.1 } : undefined}
                             transition={{ duration: 0.3 }}
+                            style={{ touchAction: 'pan-y' }}
                           />
                         </motion.div>
                         
@@ -214,8 +188,9 @@ export default function Projects() {
                         <motion.div
                           className="project-overlay"
                           initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
+                          whileHover={!isMobile ? { opacity: 1 } : undefined}
                           transition={{ duration: 0.3 }}
+                          style={{ touchAction: 'pan-y' }}
                         >
                           <div className="overlay-content">
                             <motion.h3
@@ -268,13 +243,12 @@ export default function Projects() {
                       </motion.p>
                     </motion.div>
                   </motion.div>
-                </MagneticHover>
               </Link>
             </motion.div>
           ))}
         </AnimatePresence>
       </motion.div>
-    </SwipeableContainer>
+    </div>
 
       {totalPages > 1 && (
         <div className="pagination">
@@ -305,6 +279,6 @@ export default function Projects() {
           </button>
         </div>
       )}
-    </PullToRefresh>
+    </div>
   );
 }

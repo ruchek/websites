@@ -3,6 +3,9 @@
   margin: 0 auto;
   padding: 2rem 0;
   perspective: 1000px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;  /* Smooth scrolling on iOS */
 }
 
 .projects-header {
@@ -58,6 +61,7 @@
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
+  touch-action: pan-y;  /* Allow vertical scrolling */
 }
 
 .project-card-link {
@@ -77,6 +81,9 @@
   transition: all 0.2s ease;
   transform-style: preserve-3d;
   position: relative;
+  touch-action: pan-y;  /* Allow vertical scrolling on touch */
+  -webkit-user-select: none;  /* Prevent text selection on mobile */
+  user-select: none;
 }
 
 .project-overlay {
@@ -258,6 +265,23 @@
   .projects-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    touch-action: pan-y !important;
+  }
+  
+  /* Disable hover effects on mobile and ensure scrolling */
+  .project-card,
+  .project-card-link,
+  .project-image,
+  .project-preview,
+  .project-overlay {
+    touch-action: pan-y !important;
+    -webkit-transform: translateZ(0);  /* Force hardware acceleration */
+    transform: translateZ(0);
+  }
+  
+  /* Prevent any pointer-events issues on mobile */
+  .project-card * {
+    pointer-events: auto;
   }
   
   .filter-tabs {

@@ -16,20 +16,13 @@ export const SwipeableContainer = ({
   const handleDragEnd = (event, info) => {
     const { offset, velocity } = info;
     
-    // Determine swipe direction based on offset and velocity
-    if (Math.abs(offset.x) > Math.abs(offset.y)) {
+    // Only handle horizontal swipes to allow vertical scrolling
+    if (Math.abs(offset.x) > Math.abs(offset.y) && Math.abs(offset.x) > threshold) {
       // Horizontal swipe
       if (offset.x > threshold && velocity.x > 0) {
         onSwipeRight && onSwipeRight();
       } else if (offset.x < -threshold && velocity.x < 0) {
         onSwipeLeft && onSwipeLeft();
-      }
-    } else {
-      // Vertical swipe
-      if (offset.y > threshold && velocity.y > 0) {
-        onSwipeDown && onSwipeDown();
-      } else if (offset.y < -threshold && velocity.y < 0) {
-        onSwipeUp && onSwipeUp();
       }
     }
   };
@@ -37,13 +30,12 @@ export const SwipeableContainer = ({
   return (
     <motion.div
       className={className}
-      drag
+      drag="x"  // Only allow horizontal drag to preserve vertical scroll
       dragControls={dragControls}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
-      whileDrag={{ scale: 0.95 }}
-      style={{ cursor: 'grab' }}
+      style={{ touchAction: 'pan-y' }}  // Allow vertical scrolling on touch devices
     >
       {children}
     </motion.div>
@@ -97,6 +89,7 @@ export const PullToRefresh = ({ onRefresh, children, className = "" }) => {
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         className="pullable-content"
+        style={{ touchAction: 'pan-x pan-y' }}  // Allow normal scrolling
       >
         {children}
       </motion.div>
@@ -104,7 +97,7 @@ export const PullToRefresh = ({ onRefresh, children, className = "" }) => {
       <style jsx>{`
         .pull-to-refresh {
           position: relative;
-          overflow: hidden;
+          overflow: visible;  /* Changed from hidden to visible */
         }
 
         .pull-indicator {
@@ -127,7 +120,7 @@ export const PullToRefresh = ({ onRefresh, children, className = "" }) => {
         }
 
         .pullable-content {
-          min-height: 100vh;
+          /* Removed min-height to allow natural content flow */
         }
       `}</style>
     </div>
